@@ -31,6 +31,14 @@
             <div class="col-md-3 mb-3">
                 <div class="card summary-card">
                     <div class="card-body">
+                        <h5 class="card-title">Documents</h5>
+                        <p class="card-text display-4 text-success">@summary.DocumentCount</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card summary-card">
+                    <div class="card-body">
                         <h5 class="card-title">Due Today</h5>
                         <p class="card-text display-4 text-warning">@summary.TasksDueToday</p>
                     </div>
@@ -53,6 +61,18 @@
                 </div>
             </div>
         </div>
+    }
+
+    @if (recentDocuments != null && recentDocuments.Any())
+    {
+        <div class="row mb-4"><div class="col"><h3>Recent Documents</h3><div class="list-group">
+            @foreach (var document in recentDocuments)
+            {
+                <a class="list-group-item list-group-item-action" href="/documents/download/@document.DocumentId">
+                    <strong>@document.Title</strong> <span class="text-muted">(@document.Category)</span>
+                </a>
+            }
+        </div></div></div>
     }
 
     @if (announcements != null && announcements.Any())
@@ -124,6 +144,7 @@
     private DashboardSummary? summary;
     private List<Announcement>? announcements;
     private List<Notification>? recentNotifications;
+    private List<Document>? recentDocuments;
     private string userName = "User";
     private int currentUserId = 0;
 
@@ -146,6 +167,7 @@
             summary = await DashboardService.GetDashboardSummaryAsync(currentUserId);
             announcements = await DashboardService.GetActiveAnnouncementsAsync();
             recentNotifications = await NotificationService.GetUserNotificationsAsync(currentUserId);
+            recentDocuments = await DashboardService.GetRecentDocumentsAsync(currentUserId);
         }
     }
 

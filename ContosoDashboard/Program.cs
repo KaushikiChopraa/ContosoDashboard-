@@ -3,6 +3,7 @@ using ContosoDashboard.Data;
 using ContosoDashboard.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,11 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.Configure<FileStorageOptions>(builder.Configuration.GetSection("FileStorage"));
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
+builder.Services.AddScoped<IFileSecurityScanner, OfflineFileSecurityScanner>();
+builder.Services.AddScoped<DocumentAuthorization>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 // Add HttpContextAccessor for accessing user claims
 builder.Services.AddHttpContextAccessor();
@@ -106,6 +112,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapBlazorHub();
+app.MapGet("/documents/download/{documentId:int}", async (int documentId, HttpContext context, IDocumentService documents) =>
+{
+    var claim = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (!int.TryParse(claim?.Value, out var userId)) return Results.Unauthorized();
+    var file = await documents.OpenAsync(userId, documentId, false);
+    return file == null ? Results.NotFound() : Results.File(file.Content, file.ContentType, file.FileName, enableRangeProcessing: true);
+});
+app.MapGet("/documents/preview/{documentId:int}", async (int documentId, HttpContext context, IDocumentService documents) =>
+{
+    var claim = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (!int.TryParse(claim?.Value, out var userId)) return Results.Unauthorized();
+    var file = await documents.OpenAsync(userId, documentId, true);
+    return file == null ? Results.NotFound() : Results.File(file.Content, file.ContentType, enableRangeProcessing: true);
+});
 app.MapFallbackToPage("/_Host");
 
 app.Run();
