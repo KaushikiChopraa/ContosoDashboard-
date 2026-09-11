@@ -5,6 +5,14 @@
 **Status**: Draft  
 **Input**: User description: `--file StakeholderDocs/document-upload-and-management-feature.md`
 
+## Clarifications
+
+### Session 2026-09-12
+
+- Q: When a document owner shares a document with a team, what existing group should define that team? -> A: Use project membership for project documents and department membership for team resources.
+
+For project documents, team sharing MUST target current project members. For Team Resources, team sharing MUST target users in the selected department. No separate document-specific team-management system is required for this feature.
+
 ## User Scenarios & Testing
 
 ### User Story 1 - Upload and Organize Documents (Priority: P1)
@@ -137,7 +145,7 @@ As an administrator, I want document activity and usage reports so that I can su
 - **FR-012**: Project team members MUST be able to view and download documents associated with their projects, while project managers MUST be able to upload and manage documents for their projects.
 - **FR-013**: Authorized users MUST be able to download accessible documents, and suitable PDFs and images MUST support browser preview.
 - **FR-014**: Document owners MUST be able to edit metadata and replace a document file; project managers MUST be able to manage documents associated with their projects.
-- **FR-015**: Document owners MUST be able to share documents with specific users or teams, and recipients MUST receive an in-app notification and see shared documents in Shared with Me.
+- **FR-015**: Document owners MUST be able to share documents with specific users or teams; team recipients MUST be current project members for project documents or members of the selected department for Team Resources, and recipients MUST receive an in-app notification and see shared documents in Shared with Me.
 - **FR-016**: Document owners and authorized project managers MUST be able to permanently delete documents after confirmation.
 - **FR-017**: Users MUST be able to attach an existing document to a task or upload a document from a task detail view; task attachments MUST inherit the task's project association.
 - **FR-018**: The dashboard MUST show the user's five most recently uploaded documents and a document count in its summary information.
@@ -176,7 +184,7 @@ As an administrator, I want document activity and usage reports so that I can su
 - The initial release is web-only and must work offline without cloud services for training purposes.
 - Protected local storage is the accepted training environment; a future managed storage provider must be adoptable without changing business workflows.
 - Existing mock authentication, roles, project membership, task pages, and in-app notifications remain the source of identity, access context, task association, and notification delivery.
-- Team sharing maps to existing project or department groupings unless a later approved decision defines another team model.
+- Team sharing uses current project membership for project documents and department membership for Team Resources; no separate document-specific team model is required.
 - A security check is available in the training workflow; when it is unavailable or cannot complete, the file is not made available and the user receives a clear failure state.
 - Most documents are expected to be smaller than 10 MB, but the enforced maximum is 25 MB per file.
 - The initial release excludes real-time collaborative editing, version history or rollback, approval workflows, external storage integrations, mobile applications, document templates, storage quotas, and recoverable trash.
